@@ -1,1 +1,7 @@
 bin
+/.metadata/
+Servers
+*.settings
+settings
+*.classpath
+*.project
