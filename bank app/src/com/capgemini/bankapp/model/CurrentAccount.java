@@ -2,7 +2,7 @@ package com.capgemini.bankapp.model;
 
 public class CurrentAccount extends BankAccount
 {
-	private int borrowedAmount;
+	private double borrowedAmount;
 	private static final int MIN_BORROW_AMOUNT = 20000;
 	
 	
@@ -18,12 +18,12 @@ public class CurrentAccount extends BankAccount
 	
 	
 	
-	public int getBorrowedAmount()
+	public double getBorrowedAmount()
 	{
 		return borrowedAmount;
 	}
 
-	public void setBorrowedAmount(int borrowedAmount)
+	public void setBorrowedAmount(double borrowedAmount)
 	{
 		this.borrowedAmount = borrowedAmount;
 	}
@@ -51,7 +51,17 @@ public class CurrentAccount extends BankAccount
 	@Override
 	public double withdraw(double amount)
 	{
-		return super.withdraw(amount);
+		if(amount <= getAccountBalance())
+			return super.withdraw(amount);
+		else if(getAccountBalance() < amount && borrowedAmount <= MIN_BORROW_AMOUNT && MIN_BORROW_AMOUNT-borrowedAmount >= amount - getAccountBalance())
+		{
+			borrowedAmount =borrowedAmount + (amount - getAccountBalance());
+			setAccountBalance(0);
+			return getAccountBalance();
+		} 
+		else
+			System.out.println("insufficient funds");
+	        return getAccountBalance();
 	}
 	
 }
