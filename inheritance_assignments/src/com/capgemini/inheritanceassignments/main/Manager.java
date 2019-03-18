@@ -12,15 +12,16 @@ public class Manager extends Employee
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-
+	
+	//Override constructor from employee class
 	public Manager(int employeeId, String employeeName, double basicSalary, double medical)
 	{
 		super(employeeId, employeeName, basicSalary, medical);
 		// TODO Auto-generated constructor stub
 	}
 
-
+	//Override method from employee class
+	//added new properties
 	@Override
 	public double grossSalary()
 	{
@@ -31,6 +32,7 @@ public class Manager extends Employee
 		return (super.grossSalary() + petrolAllowance + foodAllowance + otherAllowance);
 	}
 	
+	//Override method from employee class
 	@Override
 	public double netSalary()
 	{

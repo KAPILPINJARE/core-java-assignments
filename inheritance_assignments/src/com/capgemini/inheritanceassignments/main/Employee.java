@@ -7,14 +7,12 @@ public class Employee
 	private double basicSalary;
 	private double medical;
 	
+	//constructors
 	public Employee()
 	{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	
-
 	public Employee(int employeeId, String employeeName, double basicSalary, double medical)
 	{
 		super();
@@ -24,8 +22,7 @@ public class Employee
 		this.medical = medical;
 	}
 
-
-
+	//all getter setter methods
 	public int getEmployeeId()
 	{
 		return employeeId;
@@ -66,12 +63,14 @@ public class Employee
 		this.medical = medical;
 	}
 	
+	//method to calculate gross salary
 	public double grossSalary()
 	{
 		double hra = basicSalary * 0.50;
 		return basicSalary + hra + medical;
 	}
 	
+	//method to calculate net salary
 	public double netSalary()
 	{
 		double pf = basicSalary * 12/100;
