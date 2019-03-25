@@ -1,11 +1,13 @@
 package com.capgemini.bankapp.test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.capgemini.bankapp.exceptions.DebitLimitExceedsException;
+import com.capgemini.bankapp.exceptions.InsufficientFund;
 import com.capgemini.bankapp.model.BankAccount;
 
 public class BankAccountTest 
@@ -32,7 +34,7 @@ public class BankAccountTest
 		assertEquals(101, account.getAccountId());
 		assertEquals("kapil", account.getAccountHolderName());
 		assertEquals("SAVING", account.getAccountType());
-		assertEquals(45000, account.getAccountBalance());
+		assertEquals(45000, account.getAccountBalance(),0.01);
 	}
 	
 	@Test
@@ -42,24 +44,24 @@ public class BankAccountTest
 	}
 	
 	@Test
-	public void testWithdrawWithSufficientFund()
+	public void testWithdrawWithSufficientFund() throws InsufficientFund, DebitLimitExceedsException
 	{
 		account.withdraw(5000);
-		assertEquals(40000, account.getAccountBalance());
+		assertEquals(40000, account.getAccountBalance(),0.01);
 	}
 	
-	@Test
-	public void testWithdrawWithInSufficientFund()
+	@Test(expected = InsufficientFund.class)
+	public void testWithdrawWithInSufficientFund() throws InsufficientFund, DebitLimitExceedsException
 	{
 		account.withdraw(55000);
-		assertEquals(45000, account.getAccountBalance());
+		assertEquals(45000, account.getAccountBalance(),0.01);
 	}
 	
 	@Test
 	public void testDeposit()
 	{
 		account.deposit(5000);
-		assertEquals(50000, account.getAccountBalance());
+		assertEquals(50000, account.getAccountBalance(),0.01);
 	}
 }
 

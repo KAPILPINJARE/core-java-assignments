@@ -1,5 +1,8 @@
 package com.capgemini.bankapp.model;
 
+import com.capgemini.bankapp.exceptions.DebitLimitExceedsException;
+import com.capgemini.bankapp.exceptions.InsufficientFund;
+
 public class SavingAccount extends BankAccount
 {
 	private static final int MIN_BALANCE = 500;
@@ -26,7 +29,7 @@ public class SavingAccount extends BankAccount
 	//here checking for if salary account or not
 	//changes are made here according to salary account or not
 	@Override
-	public double withdraw(double amount)
+	public double withdraw(double amount) throws InsufficientFund, DebitLimitExceedsException
 	{
 		if(isSalaryAccount)
 			return super.withdraw(amount);
@@ -34,7 +37,6 @@ public class SavingAccount extends BankAccount
 			if(getAccountBalance() - amount >= MIN_BALANCE)
 				return getAccountBalance()-amount;
 			else
-				System.out.println("insufficient funds");
-		        return getAccountBalance();
+				throw new InsufficientFund("insuffiecient funds");
 	}
 }
