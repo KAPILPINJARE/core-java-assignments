@@ -28,6 +28,7 @@ public class BankAccount implements Serializable
 		this.debitCard = debitCard;
 	}
 	
+	
 	private void writeObject(ObjectOutputStream objectOutputStream) throws IOException
 	{
 		objectOutputStream.defaultWriteObject();

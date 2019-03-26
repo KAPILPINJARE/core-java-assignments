@@ -3,7 +3,7 @@ package com.capgemini.bankapp.model;
 public class BankAccount
 {
 	private long accountId;
-	private String acccoutHolderName;
+	private String accoutHolderName;
 	private String accountType;
 	private double accountBalance;
 	
@@ -16,7 +16,17 @@ public class BankAccount
 	public BankAccount(String acccoutHolderName, String accountType, double accountBalance)
 	{
 		super();
-		this.acccoutHolderName = acccoutHolderName;
+		this.accoutHolderName = acccoutHolderName;
+		this.accountType = accountType;
+		this.accountBalance = accountBalance;
+	}
+
+	
+	public BankAccount(long accountId, String acccoutHolderName, String accountType, double accountBalance)
+	{
+		super();
+		this.accountId = accountId;
+		this.accoutHolderName = acccoutHolderName;
 		this.accountType = accountType;
 		this.accountBalance = accountBalance;
 	}
@@ -33,12 +43,12 @@ public class BankAccount
 
 	public String getAcccoutHolderName()
 	{
-		return acccoutHolderName;
+		return accoutHolderName;
 	}
 
 	public void setAcccoutHolderName(String acccoutHolderName)
 	{
-		this.acccoutHolderName = acccoutHolderName;
+		this.accoutHolderName = acccoutHolderName;
 	}
 
 	public String getAccountType()
@@ -64,7 +74,7 @@ public class BankAccount
 	@Override
 	public String toString()
 	{
-		return "BankAccount [accountId=" + accountId + ", acccoutHolderName=" + acccoutHolderName + ", accountType="
+		return "[accountId=" + accountId + ", acccoutHolderName=" + accoutHolderName + ", accountType="
 				+ accountType + ", accountBalance=" + accountBalance + "]";
 	}
 	
