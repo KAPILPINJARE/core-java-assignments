@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.RollingFileAppender;
+
 import com.capgemini.bankapp.exceptions.AccountNotFoundException;
 import com.capgemini.bankapp.exceptions.LowBalanceException;
 import com.capgemini.bankapp.model.BankAccount;
@@ -12,8 +16,15 @@ import com.capgemini.bankapp.service.impl.BankAccountServiceImpl;
 
 public class BankAccountClient
 {
-	public static void main(String[] args) throws IOException, LowBalanceException, AccountNotFoundException
+	static final Logger logger = Logger.getLogger(BankAccountClient.class);//we can give fully qualified class name as string or class name
+	
+	public static void main(String[] args) throws LowBalanceException, AccountNotFoundException 
 	{
+		//this is programmatic configuration of logger we have to do this each time for each class 
+		//so that we use declarative configuration 
+//		logger.setLevel(Level.DEBUG);
+//		logger.addAppender(new RollingFileAppender());
+	
 		int choice;
 		long accountId;
 		String accountHolderName;
@@ -32,7 +43,7 @@ public class BankAccountClient
 			{
 				System.out.println("\n1. Create New Account\n2. Check Balance\n3. Withdraw\n4. Deposit");
 				System.out.println("5. Fund Transfer\n6. Display All Accounts\n7. Search For an Account");
-				System.out.println("8. Delete an Account\n9. Exit");
+				System.out.println("8. Delete an Account\n9. Update an Account\n10. Exit");
 				
 				System.out.println("please enter your choice... ");
 				choice = Integer.parseInt(reader.readLine());
@@ -66,7 +77,8 @@ public class BankAccountClient
 					 			System.out.println("Balance after withdraw " + accountService.withdraw(accountId, amount));
 							} catch (LowBalanceException e)
 							{
-								System.out.println("-----Insufficient Fund------");
+								//System.out.println("-----Insufficient Fund------");
+								logger.error("withdraw failed: ", e);
 							}
 					 		break;
 					
@@ -114,7 +126,19 @@ public class BankAccountClient
 								System.out.println("failed to delete the account");
 							break;
 					
-					case 9: System.out.println("thanks for banking with us...");
+					case 9:	System.out.println("enter account id");
+					 		accountId = Long.parseLong(reader.readLine());
+					 		System.out.println("enter new Account Holder Name");
+					 		accountHolderName = reader.readLine();
+					 		System.out.println("enter new Account Type");
+					 		accountType = reader.readLine();
+					 		if(accountService.updateAccount(accountId, accountHolderName, accountType))
+					 			System.out.println("Account update successfully");
+					 		else
+					 			System.out.println("Failed to update account");
+					 		break;
+					 		
+					case 10: System.out.println("thanks for banking with us...");
 							System.exit(0);
 							break;
 					
@@ -124,6 +148,10 @@ public class BankAccountClient
 				}
 			}
 		}
-		
+		catch(IOException e)
+		{
+			//e.printStackTrace();
+			logger.error("Exception  :", e);
+		}
 	}
 }

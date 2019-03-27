@@ -16,4 +16,5 @@ public interface BankAccountService
 	public boolean addNewBankAccount(BankAccount account);
 	public List<BankAccount> findAllBankAccount();
 	public BankAccount searchForAccount(long accountId);
+	public boolean updateAccount(long accountId,String newName, String newAccountType);
 }

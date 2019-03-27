@@ -1,0 +1,12 @@
+2019-03-27 11:59:36,707[yyyy-MM-dd HH:mm:ss] - 0 - [main] ERROR com.capgemini.bankapp.client.BankAccountClient  - Exception: 
+com.capgemini.bankapp.exceptions.LowBalanceException: account balance not sufficient..
+	at com.capgemini.bankapp.service.impl.BankAccountServiceImpl.withdraw(BankAccountServiceImpl.java:42)
+	at com.capgemini.bankapp.client.BankAccountClient.main(BankAccountClient.java:77)
+2019-03-27 12:02:25,509[yyyy-MM-dd HH:mm:ss] - 1 - [main] ERROR com.capgemini.bankapp.client.BankAccountClient  - withdraw failed: 
+com.capgemini.bankapp.exceptions.LowBalanceException: account balance not sufficient..
+	at com.capgemini.bankapp.service.impl.BankAccountServiceImpl.withdraw(BankAccountServiceImpl.java:42)
+	at com.capgemini.bankapp.client.BankAccountClient.main(BankAccountClient.java:77)
+2019-03-27 12:03:59,013[yyyy-MM-dd HH:mm:ss] - 93505 - [main] ERROR com.capgemini.bankapp.client.BankAccountClient  - withdraw failed: 
+com.capgemini.bankapp.exceptions.LowBalanceException: account balance not sufficient..
+	at com.capgemini.bankapp.service.impl.BankAccountServiceImpl.withdraw(BankAccountServiceImpl.java:42)
+	at com.capgemini.bankapp.client.BankAccountClient.main(BankAccountClient.java:77)

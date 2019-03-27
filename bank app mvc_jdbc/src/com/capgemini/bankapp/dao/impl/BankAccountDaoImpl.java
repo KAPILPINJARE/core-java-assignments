@@ -23,8 +23,8 @@ public class BankAccountDaoImpl implements BankAccountDao
 				PreparedStatement preparedStatement = connection.prepareStatement(query);
 				ResultSet result = preparedStatement.executeQuery())
 		{
-			if(result.next())
-			balance = result.getDouble(1);
+			if (result.next())
+				balance = result.getDouble(1);
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -43,7 +43,7 @@ public class BankAccountDaoImpl implements BankAccountDao
 			preparedStatement.setDouble(1, newBalance);
 			preparedStatement.setLong(2, accountId);
 			result = preparedStatement.executeUpdate();
-			
+
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
@@ -105,7 +105,7 @@ public class BankAccountDaoImpl implements BankAccountDao
 				String accountHolderName = result.getString(2);
 				String accountType = result.getString(3);
 				double accountBalance = result.getDouble(4);
-				
+
 				BankAccount account = new BankAccount(accountId, accountHolderName, accountType, accountBalance);
 				accounts.add(account);
 			}
@@ -121,17 +121,41 @@ public class BankAccountDaoImpl implements BankAccountDao
 	{
 		String query = "SELECT * FROM BANKACCOUNTS WHERE ACCOUNT_ID = " + accountId;
 		BankAccount account = null;
-		try(Connection connection = DbUtil.getConnetion();
-			PreparedStatement statement = connection.prepareStatement(query);
-			ResultSet result = statement.executeQuery())
-		{	
-			if(result.next())
-				account = new BankAccount(result.getLong(1), result.getString(2), result.getString(3), result.getDouble(4));
+		try (Connection connection = DbUtil.getConnetion();
+				PreparedStatement statement = connection.prepareStatement(query);
+				ResultSet result = statement.executeQuery())
+		{
+			if (result.next())
+				account = new BankAccount(result.getLong(1), result.getString(2), result.getString(3),
+						result.getDouble(4));
 		} catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
 		return account;
+	}
+
+	@Override
+	public boolean updateAccount(long accountId, String newName, String newAccountType)
+	{
+		String query = "UPDATE BANKACCOUNTS SET CUSTOMER_NAME = ?,ACCOUNT_TYPE = ? WHERE ACCOUNT_ID = ?";
+		int update = 0;
+		try (Connection connection = DbUtil.getConnetion();
+				PreparedStatement statement = connection.prepareStatement(query))
+		{
+			statement.setString(1, newName);
+			statement.setString(2, newAccountType);
+			statement.setLong(3, accountId);
+			update = statement.executeUpdate();
+			if (update == 1)
+			{
+				return true;
+			}
+		} catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }

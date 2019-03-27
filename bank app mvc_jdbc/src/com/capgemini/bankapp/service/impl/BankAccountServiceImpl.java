@@ -12,9 +12,7 @@ import com.capgemini.bankapp.service.BankAccountService;
 public class BankAccountServiceImpl implements BankAccountService
 {
 	private BankAccountDao bankAccountDao;
-	
-	
-	
+
 	public BankAccountServiceImpl()
 	{
 		bankAccountDao = new BankAccountDaoImpl();
@@ -30,15 +28,14 @@ public class BankAccountServiceImpl implements BankAccountService
 	public double withdraw(long accountId, double amount) throws LowBalanceException, AccountNotFoundException
 	{
 		double balance = bankAccountDao.getBalance(accountId);
-		if(balance - amount >= 0)
+		if (balance - amount >= 0)
 		{
 			balance = balance - amount;
-			if(bankAccountDao.updateBalance(accountId, balance) == 0)
-				throw new  AccountNotFoundException("account not found");
+			if (bankAccountDao.updateBalance(accountId, balance) == 0)
+				throw new AccountNotFoundException("account not found");
 			else
 				return balance;
-		}
-		else 
+		} else
 			throw new LowBalanceException("account balance not sufficient..");
 	}
 
@@ -47,8 +44,8 @@ public class BankAccountServiceImpl implements BankAccountService
 	{
 		double balance = bankAccountDao.getBalance(accountId);
 		balance = balance + amount;
-		if(bankAccountDao.updateBalance(accountId, balance) == 0)
-			throw new  AccountNotFoundException("account not found");
+		if (bankAccountDao.updateBalance(accountId, balance) == 0)
+			throw new AccountNotFoundException("account not found");
 		else
 			return balance;
 	}
@@ -60,7 +57,8 @@ public class BankAccountServiceImpl implements BankAccountService
 	}
 
 	@Override
-	public double fundTransfer(long fromAccount, long toAccount, double amount) throws LowBalanceException, AccountNotFoundException
+	public double fundTransfer(long fromAccount, long toAccount, double amount)
+			throws LowBalanceException, AccountNotFoundException
 	{
 		double balance = withdraw(fromAccount, amount);
 		deposit(toAccount, amount);
@@ -83,6 +81,12 @@ public class BankAccountServiceImpl implements BankAccountService
 	public BankAccount searchForAccount(long accountId)
 	{
 		return (BankAccount) bankAccountDao.searchForAccount(accountId);
+	}
+
+	@Override
+	public boolean updateAccount(long accountId, String newName, String newAccountType)
+	{
+		return bankAccountDao.updateAccount(accountId, newName, newAccountType);
 	}
 
 }
