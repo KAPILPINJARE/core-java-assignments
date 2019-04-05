@@ -2,40 +2,48 @@ package com.capgemini.bankapp.service.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.capgemini.bankapp.dao.BankAccountDao;
 import com.capgemini.bankapp.dao.impl.BankAccountDaoImpl;
 import com.capgemini.bankapp.exceptions.AccountNotFoundException;
 import com.capgemini.bankapp.exceptions.LowBalanceException;
 import com.capgemini.bankapp.model.BankAccount;
 import com.capgemini.bankapp.service.BankAccountService;
+import com.capgemini.bankapp.util.DbUtil;
 
 public class BankAccountServiceImpl implements BankAccountService
 {
 	private BankAccountDao bankAccountDao;
-
+	private static Logger logger = Logger.getLogger(BankAccountServiceImpl.class);
 	public BankAccountServiceImpl()
 	{
 		bankAccountDao = new BankAccountDaoImpl();
 	}
 
 	@Override
-	public double checkBalance(long accountId)
+	public double checkBalance(long accountId) throws AccountNotFoundException
 	{
-		return bankAccountDao.getBalance(accountId);
+		double balance = bankAccountDao.getBalance(accountId);
+		if(balance >= 0)
+			return balance;
+		else 
+			throw new AccountNotFoundException("BankAccount doesnt exists...");
 	}
 
 	@Override
 	public double withdraw(long accountId, double amount) throws LowBalanceException, AccountNotFoundException
 	{
 		double balance = bankAccountDao.getBalance(accountId);
-		if (balance - amount >= 0)
+		if(balance < 0)
+			throw new AccountNotFoundException("BankAccount doesnt exists...");
+		else if (balance - amount >= 0)
 		{
 			balance = balance - amount;
-			if (bankAccountDao.updateBalance(accountId, balance) == 0)
-				throw new AccountNotFoundException("account not found");
-			else
-				return balance;
-		} else
+			bankAccountDao.updateBalance(accountId, balance);
+			DbUtil.commit();
+			return balance;
+		} else 
 			throw new LowBalanceException("account balance not sufficient..");
 	}
 
@@ -43,32 +51,52 @@ public class BankAccountServiceImpl implements BankAccountService
 	public double deposit(long accountId, double amount) throws AccountNotFoundException
 	{
 		double balance = bankAccountDao.getBalance(accountId);
+		if(balance < 0)
+			throw new AccountNotFoundException("BankAccount doesnt exists...");
 		balance = balance + amount;
-		if (bankAccountDao.updateBalance(accountId, balance) == 0)
-			throw new AccountNotFoundException("account not found");
-		else
-			return balance;
+		bankAccountDao.updateBalance(accountId, balance);
+		DbUtil.commit();
+		return balance;
 	}
 
 	@Override
-	public boolean deleteBankAccount(long accountId)
+	public boolean deleteBankAccount(long accountId) throws AccountNotFoundException
 	{
-		return bankAccountDao.deleteBankAccount(accountId);
+		boolean result = bankAccountDao.deleteBankAccount(accountId);
+		if(result)
+		{
+			DbUtil.commit();
+			return result;
+		}
+			else
+			throw new AccountNotFoundException("BankAccount doesnt exists...");
 	}
 
 	@Override
 	public double fundTransfer(long fromAccount, long toAccount, double amount)
 			throws LowBalanceException, AccountNotFoundException
 	{
-		double balance = withdraw(fromAccount, amount);
-		deposit(toAccount, amount);
+		double balance = 0;
+		try
+		{
+			balance = withdrawForFundTransfer(fromAccount, amount);
+			deposit(toAccount, amount);
+		} catch (LowBalanceException | AccountNotFoundException e)
+		{
+			logger.error("Exception ", e);
+			DbUtil.rollback();
+			throw e;
+		}
 		return balance;
 	}
 
 	@Override
 	public boolean addNewBankAccount(BankAccount account)
 	{
-		return bankAccountDao.addNewBankAccount(account);
+		boolean result = bankAccountDao.addNewBankAccount(account);
+		if(result)
+			DbUtil.commit();
+		return result;
 	}
 
 	@Override
@@ -78,15 +106,37 @@ public class BankAccountServiceImpl implements BankAccountService
 	}
 
 	@Override
-	public BankAccount searchForAccount(long accountId)
+	public BankAccount searchForAccount(long accountId) throws AccountNotFoundException
 	{
-		return (BankAccount) bankAccountDao.searchForAccount(accountId);
+		BankAccount account = (BankAccount) bankAccountDao.searchForAccount(accountId);
+		if(account == null)
+			throw new AccountNotFoundException("account doesnot exists..");
+		return account;
 	}
 
 	@Override
-	public boolean updateAccount(long accountId, String newName, String newAccountType)
+	public boolean updateAccount(BankAccount account)
 	{
-		return bankAccountDao.updateAccount(accountId, newName, newAccountType);
+		boolean result = bankAccountDao.updateAccount(account);
+		if(result)
+			DbUtil.commit();
+		return result;
+	}
+
+
+	public double withdrawForFundTransfer(long accountId, double amount)
+			throws LowBalanceException, AccountNotFoundException
+	{
+		double balance = bankAccountDao.getBalance(accountId);
+		if(balance < 0)
+			throw new AccountNotFoundException("BankAccount doesnt exists...");
+		else if (balance - amount >= 0)
+		{
+			balance = balance - amount;
+			bankAccountDao.updateBalance(accountId, balance);
+			return balance;
+		} else 
+			throw new LowBalanceException("account balance not sufficient..");
 	}
 
 }

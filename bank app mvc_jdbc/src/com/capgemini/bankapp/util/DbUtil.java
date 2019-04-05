@@ -9,19 +9,28 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 public class DbUtil
 {
-	private static String dburl;
-	private static String username;
-	private static String password;
+	private static String driverClassName = "com.mysql.jdbc.Driver";
+	private static String dburl = "jdbc:mysql://localhost:3306/bankappdb";
+	private static String username = "root";
+	private static String password = "root";
+
+	static Connection connection;
+	static final Logger logger = Logger.getLogger(DbUtil.class);
 
 	public static Connection getConnetion()
 	{
-		Connection connection = null;
 		try
 		{
-			Class.forName("com.mysql.jdbc.Driver");
-			connection = DriverManager.getConnection(dburl, username, password);
+			Class.forName(driverClassName);
+			if (connection == null)
+			{
+				connection = DriverManager.getConnection(dburl, username, password);
+				connection.setAutoCommit(false);
+			}
 		} catch (ClassNotFoundException e)
 		{
 			System.out.println("Driver Connection not fount");
@@ -33,22 +42,48 @@ public class DbUtil
 
 	}
 
-	static
+	public static void commit()
 	{
-		try (BufferedReader bufferedReader = new BufferedReader(new FileReader("dbConfig.properties")))
+		try
 		{
-			Properties properties = new Properties();
-			properties.load(bufferedReader);
-
-			dburl = properties.getProperty("dburl");
-			username = properties.getProperty("username");
-			password = properties.getProperty("password");
-		} catch (FileNotFoundException e)
+			if (connection != null)
+				connection.commit();
+		} catch (SQLException e)
 		{
-			e.printStackTrace();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
+			logger.error("SQLException", e);
 		}
 	}
+
+	public static void rollback()
+	{
+		try
+		{
+			if (connection != null)
+				connection.rollback();
+		} catch (SQLException e)
+		{
+			logger.error("SQLException", e);
+		}
+	}
+
+//	static
+//	{
+//		try (BufferedReader bufferedReader = new BufferedReader(new FileReader("dbConfig.properties")))
+//		{
+//			Properties properties = new Properties();
+//			properties.load(bufferedReader);
+//
+//			driverClassName = properties.getProperty("driverClassName");
+//			dburl = properties.getProperty("dburl");
+//			username = properties.getProperty("username");
+//			password = properties.getProperty("password");
+//		} catch (FileNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		} catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//	}
+
 }

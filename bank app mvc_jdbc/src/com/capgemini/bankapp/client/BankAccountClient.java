@@ -18,7 +18,7 @@ public class BankAccountClient
 {
 	static final Logger logger = Logger.getLogger(BankAccountClient.class);//we can give fully qualified class name as string or class name
 	
-	public static void main(String[] args) throws LowBalanceException, AccountNotFoundException 
+	public static void main(String[] args) throws LowBalanceException, AccountNotFoundException , Exception
 	{
 		//this is programmatic configuration of logger we have to do this each time for each class 
 		//so that we use declarative configuration 
@@ -101,7 +101,13 @@ public class BankAccountClient
 							toAccountId = Long.parseLong(reader.readLine());
 							System.out.println("enter amount");
 							amount = Double.parseDouble(reader.readLine());
-							System.out.println(accountService.fundTransfer(fromAccountId, toAccountId, amount));
+							try
+							{
+								System.out.println(accountService.fundTransfer(fromAccountId, toAccountId, amount));
+							} catch (AccountNotFoundException | LowBalanceException e)
+							{
+								System.out.println("account not exists..");
+							}
 							break;
 							
 					case 6: for(BankAccount accounts : accountService.findAllBankAccount())
@@ -128,14 +134,24 @@ public class BankAccountClient
 					
 					case 9:	System.out.println("enter account id");
 					 		accountId = Long.parseLong(reader.readLine());
-					 		System.out.println("enter new Account Holder Name");
-					 		accountHolderName = reader.readLine();
-					 		System.out.println("enter new Account Type");
-					 		accountType = reader.readLine();
-					 		if(accountService.updateAccount(accountId, accountHolderName, accountType))
-					 			System.out.println("Account update successfully");
-					 		else
-					 			System.out.println("Failed to update account");
+					 		BankAccount account2 = null;
+					 		try
+					 		{
+					 			account2 = accountService.searchForAccount(accountId);
+					 			System.out.println("enter new Account Holder Name");
+						 		account2.setAcccoutHolderName(reader.readLine());
+						 		System.out.println("enter new Account Type");
+						 		account2.setAccountType(reader.readLine());
+						 		if(accountService.updateAccount(account2))
+						 			System.out.println("Account update successfully");
+						 		else
+						 			System.out.println("Failed to update account");
+					 		}
+					 		catch(AccountNotFoundException e)
+					 		{
+					 			System.out.println("account doesot exists");
+					 		}
+					 		
 					 		break;
 					 		
 					case 10: System.out.println("thanks for banking with us...");

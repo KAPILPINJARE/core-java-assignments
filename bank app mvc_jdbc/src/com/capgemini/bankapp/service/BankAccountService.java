@@ -8,13 +8,14 @@ import com.capgemini.bankapp.model.BankAccount;
 
 public interface BankAccountService
 {
-	public double checkBalance(long accountId);
+	public double checkBalance(long accountId) throws AccountNotFoundException;
 	public double withdraw(long accountId,double amount)throws LowBalanceException, AccountNotFoundException;
 	public double deposit(long accountId,double amount) throws AccountNotFoundException;
-	public boolean deleteBankAccount(long accountId);
+	public boolean deleteBankAccount(long accountId) throws AccountNotFoundException;
 	public double fundTransfer(long fromAccount, long toAccount, double amount) throws LowBalanceException, AccountNotFoundException;
 	public boolean addNewBankAccount(BankAccount account);
 	public List<BankAccount> findAllBankAccount();
-	public BankAccount searchForAccount(long accountId);
-	public boolean updateAccount(long accountId,String newName, String newAccountType);
-}
+	public BankAccount searchForAccount(long accountId) throws AccountNotFoundException;
+	public boolean updateAccount(BankAccount account);
+	
+	}
